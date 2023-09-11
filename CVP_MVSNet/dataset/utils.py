@@ -111,8 +111,10 @@ def read_cam_file(filename):
 
     # depth_min & depth_interval: line 11
     depth_min = float(lines[11].split()[0])
+    #depth_min = 2.
     depth_interval = float(lines[11].split()[1])
     depth_max = depth_min+(256*depth_interval)
+    #depth_max = 100.
     return intrinsics, extrinsics, depth_min, depth_max
 
 def write_cam(filename, intrinsic, extrinsic, depth_min, depth_max):

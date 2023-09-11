@@ -10,7 +10,7 @@ import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from dataset import dtu_jiayu
+from dataset import dtu_jiayu, colmap_data
 from models import net
 from models.modules import *
 from utils import *
@@ -60,7 +60,7 @@ logger.info(settings_str)
 # Run CVP-MVSNet to save depth maps and confidence maps
 def save_depth():
     # dataset, dataloader
-    test_dataset = dtu_jiayu.MVSDataset(args, logger)
+    test_dataset = colmap_data.MVSDatasetColmap(args, logger)
     test_loader = DataLoader(test_dataset, args.batch_size, shuffle=args.eval_shuffle, num_workers=8, drop_last=True)
 
     # model
@@ -113,6 +113,7 @@ def save_depth():
                 # save depth maps
                 save_pfm(depth_filename, est_depth)
                 write_depth_img(depth_filename+".png", est_depth)
+                cv2.imwrite(depth_filename+"_cv.png",est_depth)
                 # Save prob maps
                 save_pfm(confidence_filename, photometric_confidence)
 

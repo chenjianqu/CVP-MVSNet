@@ -9,6 +9,8 @@
 
 import torch
 import torch.nn as nn
+
+import visualize_utils
 from models.modules import *
 # Debug:
 # import pdb,time
@@ -102,7 +104,7 @@ class network(nn.Module):
         for i in range(self.args.nsrc):
             src_feature_pyramids.append(self.featurePyramid(src_imgs[:,i,:,:,:],self.args.nscale))
 
-        # Pre-conditioning corresponding multi-scale intrinsics for the feature:
+        #计算每个金字塔层级的内参,shape[1,5,3,3]
         ref_in_multiscales = conditionIntrinsics(ref_in,ref_img.shape,[feature.shape for feature in ref_feature_pyramid])
         src_in_multiscales = []
         for i in range(self.args.nsrc):
@@ -146,6 +148,8 @@ class network(nn.Module):
         prob_volume = F.softmax(cost_reg, dim=1)
         depth = depth_regression(prob_volume, depth_values=depth_hypos)
         depth_est_list.append(depth)
+
+        #visualize_utils.visualize_depth(None, depth.cpu().numpy(), ref_in_multiscales[:,-1].cpu().numpy(), None)
 
         ## Upsample depth map and refine along feature pyramid
         for level in range(self.args.nscale-2,-1,-1):
